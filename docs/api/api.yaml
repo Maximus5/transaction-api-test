@@ -4,88 +4,84 @@ info:
   version: "1.0"
 basePath: /v1
 consumes:
-  - application/json
+  - text/plain; charset=utf-8
 produces:
-  - application/json
+  - text/plain; charset=utf-8
 paths:
+  /sessions/create:
+    post:
+      description: Create a new client session
+      responses:
+        200:
+          description: OK, created session id
+          schema:
+            type: string
+            description: created session id
+            example: "S10001"
   /accounts/create:
     post:
       description: Create a new account with some initial amount
       parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            type: object
-            properties:
-              token:
-                description: idempotency token
-                type: string
-                example: "101"
-              initial_amount:
-                description: a decimal number converted to string
-                type: string
-                example: "12345.78"
+        - in: query
+          name: token
+          description: idempotency token, e.g. '123'
+          type: string
+        - in: query
+          name: amount
+          description: for example '174724.54'
+          type: string
       responses:
         200:
-          description: OK
+          description: OK, created account id
           schema:
-            type: object
-            properties:
-              id:
-                type: string
-                description: created account id
-                example: "A10001"
-  /account/info:
+            type: string
+            description: created account id
+            example: "A10001"
+        400:
+          description: error in parameters
+  /account/amount:
     post:
       description: Retrieve current amount on account
       parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            type: object
-            properties:
-              id:
-                description: account id
-                type: string
-                example: "A10001"
+        - in: query
+          name: account_id
+          description: account id, e.g. 'A10001'
+          type: string
       responses:
         200:
-          description: OK
+          description: OK, amount on account
           schema:
-            type: object
-            properties:
-              amount:
-                type: string
-                description: a decimal number converted to string
-                example: "12345.78"
+            type: string
+            description: a decimal number converted to string
+            example: "12345.78"
+        400:
+          description: error in parameters
   /transactions/create:
     post:
       description: Create a new transaction between accounts
       parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            type: object
-            properties:
-              token:
-                description: idempotency token
-                type: string
-                example: "102"
-              src_account_id:
-                description: source account id
-                type: string
-                example: "A10001"
-              dst_account_id:
-                description: destination account id
-                type: string
-                example: "A10002"
-              amount:
-                description: amount to transfer from src_account_id to dst_account_id
-                type: string
-                example: "1070.00"
+        - in: query
+          name: token
+          description: idempotency token, e.g. '102'
+          type: string
+        - in: query
+          name: src_account_id
+          description: source account id, e.g. 'A10001'
+          type: string
+        - in: query
+          name: dst_account_id
+          description: destination account id, e.g. 'A10002'
+          type: string
+        - in: query
+          name: amount
+          description: amount to transfer from src_account_id to dst_account_id, e.g. '1070.00'
+          type: string
       responses:
         200:
-          description: OK
+          description: OK, created transaction id
+          schema:
+            type: string
+            description: created transaction id
+            example: "T10001"
+        400:
+          description: error in parameters
